@@ -9,7 +9,7 @@ MAD <- function(x, med, n) {
     .Call(`_RPD_MAD`, x, med, n)
 }
 
-RPD_outl_C <- function(x, X, beta, quant, n, d, m, ndir, ndir2) {
-    .Call(`_RPD_RPD_outl_C`, x, X, beta, quant, n, d, m, ndir, ndir2)
+RPD_outl_C <- function(x, X, alpha, beta, quant, gammas, basis, n, d, m, ngammas, ndir, ndir2, Jmax, echo) {
+    .Call(`_RPD_RPD_outl_C`, x, X, alpha, beta, quant, gammas, basis, n, d, m, ngammas, ndir, ndir2, Jmax, echo)
 }
 

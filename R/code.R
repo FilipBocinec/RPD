@@ -13,15 +13,26 @@
 #' \code{n}-times-\code{d}, where \code{n} is the size of the dataset and 
 #' \code{d} is its dimension.
 #' 
+#' @param alpha A non-negative (possibly \code{Inf}) number specifying the 
+#' amount of regularization to be applied to the operator part. Always an
+#' absolute value.
+#' 
 #' @param beta A non-negative number specifying the amount of regularization 
-#' to be applied. If \code{quant=TRUE}, must be a number in the interval 
-#' \code{[0,1]}. If \code{quant=FALSE}, can be any non-negative number. Choice
-#' \code{beta=0} in any case means that no regularization is applied. By 
-#' default \code{beta=0}.
+#' to be applied in the MAD part. If \code{quant=TRUE}, must be a number 
+#' in the interval \code{[0,1]}. If \code{quant=FALSE}, can be any non-negative 
+#' number. Choice \code{beta=0} in any case means that no regularization is 
+#' applied to the MAD part. By default \code{beta=0}.
 #' 
 #' @param quant An indicator of whether the parameter \code{beta} stands for
 #' regularization in terms of quantiles (\code{TRUE}, default), or in terms
 #' of the nominal value of the MAD (\code{FALSE}).
+#' 
+#' @param operator The operator specifying the penalization for the operator
+#' part. Must be a list of two components: (i) \code{values}, a numerical vector
+#' of length \code{K} with positive eigenvalues of the operator Gamma, and (ii)
+#' \code{vectors}, a numerical matrix of dimension \code{K}-times-\code{d} whose
+#' rows specify the eigenvectors of Gamma. By default \code{NULL}, which
+#' means that no regularization is applied to the operator part. 
 #' 
 #' @param ndir A number of randomly chosen directions in the unit sphere to 
 #' approximate the projection depth. By default \code{ndir=1e4}.
@@ -29,6 +40,17 @@
 #' @param ndir2 A number of randomly chosen directions in the unit sphere to 
 #' find the threshold for MAD based on \code{beta} if \code{quant=TRUE}. This
 #' parameter is ignored if \code{quant=FALSE}. 
+#' 
+#' @param Jmax The maximum number of unit directions to be sampled and checked
+#' for whether they satisfy the conditions imposed on the MAD part and the 
+#' operator part. If \code{Jmax} directions are considered but \code{ndir} of 
+#' them do not satisfy both conditions, gives an error. By default, 
+#' \code{Jmax=1e6}.
+#' 
+#' @param echo A boolean value that should be used only for diagnostic purposes. If 
+#' \code{echo=TRUE}, as a part of the output also diagnostic messages about the 
+#' process of searching for regularized directions is given. By default
+#' \code{echo=FALSE}.
 #' 
 #' @return A numerical vector \code{res} of approximate (regularized) projection 
 #' outlyingness values. Points with lower values correspond to deeper points in
@@ -61,8 +83,30 @@
 #' D2 = matrix(1/(1+O2),ncol=evl)
 #' 
 #' contour(xg, yg, D2, col="navy", lwd=2, add=TRUE)
+#' 
+#' # regularized depth: regularization with the operator
+#' # (A) custom operator
+#' operator = list()
+#' operator$values = c(0.01,100)
+#' operator$vectors = rbind(c(1,0),c(1,1))
+#' alpha = 1.5
+#' D = RPDepth(mu, X, alpha = alpha, beta = 0, operator = operator)
+#' D1 = matrix(1/(1+D),ncol=evl)
+#' 
+#' # (B) variance operator of X
+#' Sigma = var(X)
+#' operator = eigen(Sigma)
+#' alpha = 10
+#' D = RPDepth(mu, X, alpha = alpha, beta = 0, operator = operator)
+#' D2 = matrix(1/(1+D),ncol=evl)
+#' 
+#' contour(xg, yg, D1, col="orange", lwd=2)
+#' points(X, cex=.15, pch=16)
+#' contour(xg, yg, D2, add=TRUE, col=2, lwd=.5)
 
-RPDepth = function(mu, X, beta = 0, quant = TRUE, ndir = 1e4, ndir2 = 1e3){
+RPDepth = function(mu, X, alpha = 0, beta = 0, quant = TRUE, operator = NULL, 
+                   ndir = 1e4, ndir2 = 1e3, Jmax = 1e6, 
+                   echo = FALSE){
   
   n = nrow(X)
   d = ncol(X)
@@ -71,7 +115,24 @@ RPDepth = function(mu, X, beta = 0, quant = TRUE, ndir = 1e4, ndir2 = 1e3){
   m = nrow(mu)
   if(ncol(mu)!=d) stop("The dimensions of X and mu do not match.")
   
-  res = RPD_outl_C(mu, X, beta, quant, n, d, m, ndir, ndir2)
+  if(!is.null(operator)){
+    gammas = operator$values
+    basis = t(operator$vectors)
+    ngammas = length(gammas)
+  } else {
+    alpha = 0
+    ngammas = 1
+    gammas = 1
+    basis = matrix(rep(0,d),ncol=1)
+  }
+  if(any(gammas<=0)) 
+    stop("The eigenvalues in operator$vectors must be all positive.")
+  gammas = 1/sqrt(gammas)
+  
+  res = RPD_outl_C(mu, X, alpha, beta, quant, 
+                   gammas, basis, n, d, m, ngammas, 
+                   ndir, ndir2, Jmax,
+                   echo)
   
   return(res)
 }
