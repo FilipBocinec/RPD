@@ -105,3 +105,61 @@ arma::mat RPD_outl_C(arma::mat x, arma::mat X, arma::vec alpha, arma::vec beta, 
   }
   return(res);  
 }
+
+// [[Rcpp::export]]
+Rcpp::List PP_PCA_C(arma::mat X,  
+                    int n, int d, int q, bool robust, double eps, bool echo){
+  // X is a centered d-times-n matrix (!)
+  arma::mat y(n,q, arma::fill::zeros);
+  arma::vec lambda(q);
+  arma::mat v(d,q);
+  arma::mat A(d,n);
+  arma::mat AX(n,n);
+  arma::vec madk(n);
+  arma::uword kmax;
+  double med, eN;
+  arma::vec zero(d, arma::fill::zeros);
+
+  for(int k = 0; k < q; k++){
+    if(k>0){
+      for(int i = 0; i < d; i++){
+        for(int j = 0; j < n; j++){
+          X(i,j) = X(i,j) - v(i,k-1)*y(j,k-1);
+        }
+      }
+    }
+    for(int j = 0; j<n; j++){
+      eN = eucNorm(X.col(j),d);
+      if(eN > eps){
+        A.col(j) = X.col(j)/eN;
+        } else {
+        A.col(j) = zero;
+        }
+    }
+    AX = X.t() * A;
+    if(echo) Rcout << "*** k: " << k << std::endl;
+    // Rcout << "AX: " << AX << std::endl;
+    for(int i = 0; i<n; i++){
+      if(robust){
+        //Rcout << "i: " << i << std::endl;
+        //Rcout << "AX: " << AX.col(i) << std::endl;
+        med = arma::median(AX.col(i));
+        //Rcout << "med: " << med << std::endl;
+        madk(i) = MAD(AX.col(i), med, n); // MAD
+        //Rcout << "MAD: " << madk(i) << std::endl;
+      } else {
+        madk(i) = stddev(AX.col(i));
+      }
+    }
+    if(echo) Rcout << "MAD: " << madk << std::endl;
+    kmax = madk.index_max();
+    if(echo) Rcout << "kmax: " << kmax << std::endl;
+    y.col(k) = AX.col(kmax);       // scores at max
+    v.col(k) = A.col(kmax);        // maximum direction
+    lambda(k) = pow(madk(kmax),2); // max value of mad
+    if(echo) Rcout << "lambda(k): " << lambda(k) << std::endl;    
+  }
+  return Rcpp::List::create(Rcpp::Named("values") = lambda,
+                            Rcpp::Named("vectors") = v,
+                            Rcpp::Named("PCA") = y);
+}

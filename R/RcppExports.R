@@ -13,3 +13,7 @@ RPD_outl_C <- function(x, X, alpha, beta, quant, gammas, basis, n, d, m, ngammas
     .Call(`_RPD_RPD_outl_C`, x, X, alpha, beta, quant, gammas, basis, n, d, m, ngammas, ndir, ndir2, Jmax, echo)
 }
 
+PP_PCA_C <- function(X, n, d, q, robust, eps, echo) {
+    .Call(`_RPD_PP_PCA_C`, X, n, d, q, robust, eps, echo)
+}
+

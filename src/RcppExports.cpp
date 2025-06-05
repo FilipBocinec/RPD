@@ -61,11 +61,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// PP_PCA_C
+Rcpp::List PP_PCA_C(arma::mat X, int n, int d, int q, bool robust, double eps, bool echo);
+RcppExport SEXP _RPD_PP_PCA_C(SEXP XSEXP, SEXP nSEXP, SEXP dSEXP, SEXP qSEXP, SEXP robustSEXP, SEXP epsSEXP, SEXP echoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    Rcpp::traits::input_parameter< int >::type q(qSEXP);
+    Rcpp::traits::input_parameter< bool >::type robust(robustSEXP);
+    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
+    Rcpp::traits::input_parameter< bool >::type echo(echoSEXP);
+    rcpp_result_gen = Rcpp::wrap(PP_PCA_C(X, n, d, q, robust, eps, echo));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RPD_eucNorm", (DL_FUNC) &_RPD_eucNorm, 2},
     {"_RPD_MAD", (DL_FUNC) &_RPD_MAD, 3},
     {"_RPD_RPD_outl_C", (DL_FUNC) &_RPD_RPD_outl_C, 15},
+    {"_RPD_PP_PCA_C", (DL_FUNC) &_RPD_PP_PCA_C, 7},
     {NULL, NULL, 0}
 };
 

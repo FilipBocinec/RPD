@@ -44,8 +44,8 @@ of the nominal value of the MAD (\code{FALSE}).}
 \item{operator}{The operator specifying the penalization for the operator
 part. Must be a list of two components: (i) \code{values}, a numerical vector
 of length \code{K} with positive eigenvalues of the operator Gamma, and (ii)
-\code{vectors}, a numerical matrix of dimension \code{K}-times-\code{d} whose
-rows specify the eigenvectors of Gamma. By default \code{NULL}, which
+\code{vectors}, a numerical matrix of dimension \code{d}-times-\code{K} whose
+columns specify the eigenvectors of Gamma. By default \code{NULL}, which
 means that no regularization is applied to the operator part.}
 
 \item{ndir}{A number of randomly chosen directions in the unit sphere to 
@@ -105,7 +105,7 @@ contour(xg, yg, D2, col="navy", lwd=2, add=TRUE)
 # (A) custom operator
 operator = list()
 operator$values = c(0.01,100)
-operator$vectors = rbind(c(1,0),c(1,1))
+operator$vectors = cbind(c(1,0),c(1,1))
 alpha = 1.5
 D = RPDepth(mu, X, alpha = alpha, beta = 0, operator = operator)
 D1 = matrix(1/(1+D),ncol=evl)
