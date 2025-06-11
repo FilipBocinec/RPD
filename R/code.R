@@ -13,19 +13,26 @@
 #' \code{n}-times-\code{d}, where \code{n} is the size of the dataset and 
 #' \code{d} is its dimension.
 #' 
-#' @param alpha A non-negative (possibly \code{Inf}) number specifying the 
-#' amount of regularization to be applied to the operator part. Always an
-#' absolute value.
+#' @param alpha A non-negative number specifying the 
+#' amount of regularization to be applied to the operator part. If 
+#' \code{quant=TRUE}, must be a number in the interval \code{[0,1)}. 
+#' If \code{quant=FALSE}, can be any non-negative 
+#' number (possibly \code{Inf}). Choice \code{alpha=0} in case when 
+#' \code{quant=TRUE} means that no regularization is 
+#' applied to the operator part; in general, if \code{quant=TRUE}, \code{alpha}
+#' stands for taking the cutoff at the \code{1-alpha} quantile of the 
+#' distribution in the operator part. By default \code{alpha=0} and 
+#' \code{quant=TRUE}.
 #' 
 #' @param beta A non-negative number specifying the amount of regularization 
 #' to be applied in the MAD part. If \code{quant=TRUE}, must be a number 
-#' in the interval \code{[0,1]}. If \code{quant=FALSE}, can be any non-negative 
+#' in the interval \code{[0,1)}. If \code{quant=FALSE}, can be any non-negative 
 #' number. Choice \code{beta=0} in any case means that no regularization is 
 #' applied to the MAD part. By default \code{beta=0}.
 #' 
-#' @param quant An indicator of whether the parameter \code{beta} stands for
-#' regularization in terms of quantiles (\code{TRUE}, default), or in terms
-#' of the nominal value of the MAD (\code{FALSE}).
+#' @param quant An indicator of whether the parameters \code{alpha} and 
+#' \code{beta} stand for regularization in terms of quantiles 
+#' (\code{TRUE}, default), or in terms of the nominal values (\code{FALSE}).
 #' 
 #' @param operator The operator specifying the penalization for the operator
 #' part. Must be a list of two components: (i) \code{values}, a numerical vector
@@ -163,7 +170,8 @@ MAD_R = function(x) median(abs(x - median(x)))
 #### projection pursuit PCA ----
 #' Projection Pursuit Principal Component Analysis
 #'
-#' The PCA using a projection pursuit algorithm from Croux and Gazen (2005).
+#' The PCA using a projection pursuit algorithm from Croux and 
+#' Ruiz-Gazen (2005).
 #' 
 #' @param X A numerical matrix with the dataset of dimension 
 #' \code{n}-times-\code{d}, where \code{n} is the size of the dataset and 
@@ -205,6 +213,11 @@ MAD_R = function(x) median(abs(x - median(x)))
 #' }
 #' 
 #' @seealso \link[rrcov:PcaProj]{PcaProj}, \link[rrcov:PcaClassic]{PcaClassic} 
+#'
+#' @references
+#' Christophe Croux and Anne Ruiz-Gazen. (2005). High breakdown estimators for 
+#' principal components: the projection-pursuit approach revisited. 
+#' \emph{Journal of Multivariate Analysis}, 95(1), 206-226.
 #'
 #' @examples
 #' n = 500

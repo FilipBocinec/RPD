@@ -42,20 +42,34 @@ arma::mat RPD_outl_C(arma::mat x, arma::mat X, arma::vec alpha, arma::vec beta, 
     }
   if(quant){
     if(beta(0) > 1 - arma::datum::eps) Rcpp::stop("The quantile in beta must be between 0 and 1.");
+    if(alpha(0) > 1 - arma::datum::eps) Rcpp::stop("The quantile in alpha must be between 0 and 1.");
     // only if beta is given as the quantile value
     // find the value of cutoff for regularization based on beta
     arma::vec MADs(ndir2, arma::fill::zeros);
+    arma::vec Gnorms(ndir2, arma::fill::zeros);
     for(int j = 0; j < ndir2; j++){
       arma::vec u(d, arma::fill::randn);
       u = u/eucNorm(u, d);
+      // MAD restriction
       for(int i = 0; i < n; i++){
         Xu(i) = dot(u, X.row(i));
       }
       Xm = arma::median(Xu);
-      MADs(j) = MAD(Xu, Xm, n);  
+      MADs(j) = MAD(Xu, Xm, n); 
+      // operator restriction
+      arma::vec Opu(d, arma::fill::zeros);
+      for(int k = 0; k < ngammas; k++){
+        Opu = Opu + dot(u, basis.col(k))*gammas(k)*basis.col(k);
+        // u = sum_k <u, e_k>*g_k^{-1/2}*e_k 
+      }
+      Gnorms(j) = eucNorm(Opu,d);
     }
+    // set final alpha and beta as quantiles
     beta = arma::quantile(MADs, beta);
-    }
+    if(alpha(0)<arma::datum::eps){
+      alpha(0) = arma::datum::inf;
+      } else alpha = arma::quantile(Gnorms, 1 - alpha);
+  }
   
   j = 0;
   while(cont){
