@@ -9,8 +9,8 @@ MAD <- function(x, med, n) {
     .Call(`_RPD_MAD`, x, med, n)
 }
 
-RPD_outl_C <- function(x, X, alpha, beta, quant, gammas, basis, n, d, m, ngammas, ndir, ndir2, Jmax, echo) {
-    .Call(`_RPD_RPD_outl_C`, x, X, alpha, beta, quant, gammas, basis, n, d, m, ngammas, ndir, ndir2, Jmax, echo)
+RPD_outl_C <- function(x, X, beta, quant, n, d, m, ndir, ndir2, Jmax, echo) {
+    .Call(`_RPD_RPD_outl_C`, x, X, beta, quant, n, d, m, ndir, ndir2, Jmax, echo)
 }
 
 PP_PCA_C <- function(X, n, d, q, robust, eps, echo) {

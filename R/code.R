@@ -13,33 +13,15 @@
 #' \code{n}-times-\code{d}, where \code{n} is the size of the dataset and 
 #' \code{d} is its dimension.
 #' 
-#' @param alpha A non-negative number specifying the 
-#' amount of regularization to be applied to the operator part. If 
-#' \code{quant=TRUE}, must be a number in the interval \code{[0,1)}. 
-#' If \code{quant=FALSE}, can be any non-negative 
-#' number (possibly \code{Inf}). Choice \code{alpha=0} in case when 
-#' \code{quant=TRUE} means that no regularization is 
-#' applied to the operator part; in general, if \code{quant=TRUE}, \code{alpha}
-#' stands for taking the cutoff at the \code{1-alpha} quantile of the 
-#' distribution in the operator part. By default \code{alpha=0} and 
-#' \code{quant=TRUE}.
-#' 
 #' @param beta A non-negative number specifying the amount of regularization 
-#' to be applied in the MAD part. If \code{quant=TRUE}, must be a number 
+#' to be applied to the MAD. If \code{quant=TRUE}, must be a number 
 #' in the interval \code{[0,1)}. If \code{quant=FALSE}, can be any non-negative 
 #' number. Choice \code{beta=0} in any case means that no regularization is 
-#' applied to the MAD part. By default \code{beta=0}.
+#' applied. By default \code{beta=0}.
 #' 
-#' @param quant An indicator of whether the parameters \code{alpha} and 
-#' \code{beta} stand for regularization in terms of quantiles 
+#' @param quant An indicator of whether the parameter \code{beta} stands for 
+#' regularization in terms of quantiles 
 #' (\code{TRUE}, default), or in terms of the nominal values (\code{FALSE}).
-#' 
-#' @param operator The operator specifying the penalization for the operator
-#' part. Must be a list of two components: (i) \code{values}, a numerical vector
-#' of length \code{K} with positive eigenvalues of the operator Gamma, and (ii)
-#' \code{vectors}, a numerical matrix of dimension \code{d}-times-\code{K} whose
-#' columns specify the eigenvectors of Gamma. By default \code{NULL}, which
-#' means that no regularization is applied to the operator part. 
 #' 
 #' @param ndir A number of randomly chosen directions in the unit sphere to 
 #' approximate the projection depth. By default \code{ndir=1e4}.
@@ -49,12 +31,13 @@
 #' parameter is ignored if \code{quant=FALSE}. 
 #' 
 #' @param Jmax The maximum number of unit directions to be sampled and checked
-#' for whether they satisfy the conditions imposed on the MAD part and the 
-#' operator part. If \code{Jmax} directions are considered but \code{ndir} of 
+#' for whether they satisfy the conditions imposed on regularization. 
+#' If \code{Jmax} directions are considered but \code{ndir} of 
 #' them do not satisfy both conditions, gives an error. By default, 
 #' \code{Jmax=1e6}.
 #' 
-#' @param echo A boolean value that should be used only for diagnostic purposes. If 
+#' @param echo A boolean value that should be used only for diagnostic purposes. 
+#' If 
 #' \code{echo=TRUE}, as a part of the output also diagnostic messages about the 
 #' process of searching for regularized directions is given. By default
 #' \code{echo=FALSE}.
@@ -90,28 +73,8 @@
 #' D2 = matrix(1/(1+O2),ncol=evl)
 #' 
 #' contour(xg, yg, D2, col="navy", lwd=2, add=TRUE)
-#' 
-#' # regularized depth: regularization with the operator
-#' # (A) custom operator
-#' operator = list()
-#' operator$values = c(0.01,100)
-#' operator$vectors = cbind(c(1,0),c(1,1))
-#' alpha = 1.5
-#' D = RPDepth(mu, X, alpha = alpha, beta = 0, operator = operator)
-#' D1 = matrix(1/(1+D),ncol=evl)
-#' 
-#' # (B) variance operator of X
-#' Sigma = var(X)
-#' operator = eigen(Sigma)
-#' alpha = 10
-#' D = RPDepth(mu, X, alpha = alpha, beta = 0, operator = operator)
-#' D2 = matrix(1/(1+D),ncol=evl)
-#' 
-#' contour(xg, yg, D1, col="orange", lwd=2)
-#' points(X, cex=.15, pch=16)
-#' contour(xg, yg, D2, add=TRUE, col=2, lwd=.5)
 
-RPDepth = function(mu, X, alpha = 0, beta = 0, quant = TRUE, operator = NULL, 
+RPDepth = function(mu, X, beta = 0, quant = TRUE,  
                    ndir = 1e4, ndir2 = 1e3, Jmax = 1e6, 
                    echo = FALSE){
   
@@ -122,22 +85,8 @@ RPDepth = function(mu, X, alpha = 0, beta = 0, quant = TRUE, operator = NULL,
   m = nrow(mu)
   if(ncol(mu)!=d) stop("The dimensions of X and mu do not match.")
   
-  if(!is.null(operator)){
-    gammas = operator$values
-    basis = operator$vectors
-    ngammas = length(gammas)
-  } else {
-    alpha = 0
-    ngammas = 1
-    gammas = 1
-    basis = matrix(rep(0,d),ncol=1)
-  }
-  if(any(gammas<=0)) 
-    stop("The eigenvalues in operator$vectors must be all positive.")
-  gammas = 1/sqrt(gammas)
-  
-  res = RPD_outl_C(mu, X, alpha, beta, quant, 
-                   gammas, basis, n, d, m, ngammas, 
+  res = RPD_outl_C(mu, X, beta, quant, 
+                   n, d, m, 
                    ndir, ndir2, Jmax,
                    echo)
   

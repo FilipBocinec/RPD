@@ -1,8 +1,8 @@
 Package: RPD
 Type: Package
 Title: Regularized projection depth for multivariate and functional data.
-Version: 0.4
-Date: 2025-06-11
+Version: 0.5
+Date: 2025-08-29
 Author: Stanislav Nagy
 Maintainer: Stanislav Nagy
     <nagy@karlin.mff.cuni.cz>
@@ -10,4 +10,4 @@ Description: Regularized projection depth for multivariate and functional data.
 License: GPL-2
 Imports: Rcpp (>= 1.0.12)
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

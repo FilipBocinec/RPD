@@ -48,7 +48,8 @@ A list composed of:
 }
 }
 \description{
-The PCA using a projection pursuit algorithm from Croux and Gazen (2005).
+The PCA using a projection pursuit algorithm from Croux and 
+Ruiz-Gazen (2005).
 }
 \examples{
 n = 500
@@ -89,6 +90,11 @@ for(i in 1:d) arrows(resRob$location[1],resRob$location[2],
                      resRob$location[2] + resRob$vectors[2,i],
                      length = 0.1, col="magenta", lwd=4)
 legend("bottomleft",c("PCA","robPCA"),col=c("orange","magenta"),lwd=4)
+}
+\references{
+Christophe Croux and Anne Ruiz-Gazen. (2005). High breakdown estimators for 
+principal components: the projection-pursuit approach revisited. 
+\emph{Journal of Multivariate Analysis}, 95(1), 206-226.
 }
 \seealso{
 \link[rrcov:PcaProj]{PcaProj}, \link[rrcov:PcaClassic]{PcaClassic}

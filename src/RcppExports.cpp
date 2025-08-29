@@ -37,27 +37,23 @@ BEGIN_RCPP
 END_RCPP
 }
 // RPD_outl_C
-arma::mat RPD_outl_C(arma::mat x, arma::mat X, arma::vec alpha, arma::vec beta, bool quant, arma::vec gammas, arma::mat basis, int n, int d, int m, int ngammas, int ndir, int ndir2, int Jmax, bool echo);
-RcppExport SEXP _RPD_RPD_outl_C(SEXP xSEXP, SEXP XSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP quantSEXP, SEXP gammasSEXP, SEXP basisSEXP, SEXP nSEXP, SEXP dSEXP, SEXP mSEXP, SEXP ngammasSEXP, SEXP ndirSEXP, SEXP ndir2SEXP, SEXP JmaxSEXP, SEXP echoSEXP) {
+arma::mat RPD_outl_C(arma::mat x, arma::mat X, arma::vec beta, bool quant, int n, int d, int m, int ndir, int ndir2, int Jmax, bool echo);
+RcppExport SEXP _RPD_RPD_outl_C(SEXP xSEXP, SEXP XSEXP, SEXP betaSEXP, SEXP quantSEXP, SEXP nSEXP, SEXP dSEXP, SEXP mSEXP, SEXP ndirSEXP, SEXP ndir2SEXP, SEXP JmaxSEXP, SEXP echoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type x(xSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< bool >::type quant(quantSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type gammas(gammasSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type basis(basisSEXP);
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< int >::type d(dSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< int >::type ngammas(ngammasSEXP);
     Rcpp::traits::input_parameter< int >::type ndir(ndirSEXP);
     Rcpp::traits::input_parameter< int >::type ndir2(ndir2SEXP);
     Rcpp::traits::input_parameter< int >::type Jmax(JmaxSEXP);
     Rcpp::traits::input_parameter< bool >::type echo(echoSEXP);
-    rcpp_result_gen = Rcpp::wrap(RPD_outl_C(x, X, alpha, beta, quant, gammas, basis, n, d, m, ngammas, ndir, ndir2, Jmax, echo));
+    rcpp_result_gen = Rcpp::wrap(RPD_outl_C(x, X, beta, quant, n, d, m, ndir, ndir2, Jmax, echo));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -82,7 +78,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_RPD_eucNorm", (DL_FUNC) &_RPD_eucNorm, 2},
     {"_RPD_MAD", (DL_FUNC) &_RPD_MAD, 3},
-    {"_RPD_RPD_outl_C", (DL_FUNC) &_RPD_RPD_outl_C, 15},
+    {"_RPD_RPD_outl_C", (DL_FUNC) &_RPD_RPD_outl_C, 11},
     {"_RPD_PP_PCA_C", (DL_FUNC) &_RPD_PP_PCA_C, 7},
     {NULL, NULL, 0}
 };
