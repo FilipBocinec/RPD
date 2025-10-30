@@ -8,6 +8,4 @@ Maintainer: Stanislav Nagy
     <nagy@karlin.mff.cuni.cz>
 Description: Regularized projection depth for multivariate and functional data.
 License: GPL-2
-Imports: Rcpp (>= 1.0.12)
-LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.3.2
